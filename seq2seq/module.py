@@ -5,6 +5,12 @@ from tensorflow.keras.layers import Dense, GRU
 
 class Additive_attention:
 
+    '''
+    Additive Attention class
+
+    https://arxiv.org/pdf/1409.0473.pdf
+    '''
+
     def __init__(self, num_units, reuse = tf.AUTO_REUSE):
         self.W1 = Dense(num_units)
         self.W2 = Dense(num_units)
@@ -14,6 +20,20 @@ class Additive_attention:
 
 
     def build(self, encoder_outputs, decoder_state):
+
+        '''
+        Build attention mechanism
+
+        Arg:
+            encoder_outputs: A tensor. output of bidirectional GRU in encoder
+                            shape must be [BS x sen_length x hidden_dim*2]
+            decoder_state: A tensor. hidden state of last time step in decoder GRU cell
+                            shape must be [BS x hidden_dim]
+
+        Return:
+            context_vector: A tensor. hidden state of next time step in decoder GRU cell
+                            shape is [BS x hidden_dim]
+        '''
         with tf.variable_scope('additive_attention', self.reuse):
             decoder_state_3dim = tf.expand_dims(decoder_state, 1)
 
@@ -29,6 +49,12 @@ class Additive_attention:
 
 
 class Bidirectional_gru:
+
+    '''
+    Bidirectional GRU calss
+
+    https://arxiv.org/pdf/1409.0473.pdf
+    '''
 
     def __init__(self,
                 hidden_dim,
@@ -55,6 +81,16 @@ class Bidirectional_gru:
 
     def build(self, inputs):
 
+        '''
+        Build Bidirectional GRU
+
+        Args:
+            inputs: A tensor. shape must be [BS x sen_length x emb_dim]
+
+        Returns:
+            output of Bidirectional GRU. shape is [BS x sen_length x hidden_dim * 2]
+            hidden state of Bidirectional GRU last step. shape is [BS x hidden_dim *2]
+        '''
         with tf.variable_scope('bidirectional_GRU', self.reuse):
             forward_outputs, forward_state = self.forward_gru(inputs)
             backward_outputs, backward_state = self.backward_gru(tf.reverse(inputs, axis = [-1]))
