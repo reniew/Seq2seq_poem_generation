@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 import os
 import sys
 
@@ -23,7 +24,8 @@ def main(self):
 
     _, _, t2i, i2t, max_len = data.load_data(DEFINES.data_path)
 
-    encoder_inputs, decoder_inputs = prepare_pred_input(inputs)
+    encoder_inputs, decoder_inputs = prepare_pred_input(inputs, t2i, max_len)
+    print(encoder_inputs, decoder_inputs)
 
     embedding_matrix = data.get_embedding_matrix(DEFINES.data_path, DEFINES.embedding_path, i2t)
 
@@ -34,16 +36,17 @@ def main(self):
                                         params = params)
 
     predict_input_fn = tf.estimator.inputs.numpy_input_fn(
-        x={"encoer_inputs": encoder_inputs, "decoer_inputs": decoder_inputs},
+        x={"encoer_inputs": encoder_inputs, "decoder_inputs": decoder_inputs},
         num_epochs=1,
         shuffle=False)
     predict = estimator.predict(input_fn = predict_input_fn)
 
     prediction = next(predict)['prediction']
 
-    return data.token2str(prediction, i2t)
+    print(inputs)
+    print(data.token2str(prediction, i2t))
 
-def prepare_pred_input(inputs, t2i):
+def prepare_pred_input(inputs, t2i, max_len):
 
     result = []
     for token in inputs.split():
@@ -52,8 +55,8 @@ def prepare_pred_input(inputs, t2i):
         else:
             result.append(t2i['<UNK>'])
 
-    encoder_inputs = np.array(result)
-    decoder_inputs = np.array([1])
+    encoder_inputs = np.array([result+[0]*(max_len-len(result))])
+    decoder_inputs = np.array([[1]+[0]*(max_len)])
 
     return encoder_inputs, decoder_inputs
 
