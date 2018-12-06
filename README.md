@@ -102,6 +102,6 @@ Input: 맨발로 거친 산길을 오르는 나의 발바닥은 돌멩이에 찢
 
 Send any bug reports to the below e-mail.
 
-diadld2@naver.com or kaienmg@gmail.com
+reniew2@gmail.com
 
 I hope this tool can help your practically.
