@@ -19,6 +19,12 @@ class Graph:
 
     def build(self, encoder_inputs, decoder_inputs):
 
+        encoder_inputs = tf.nn.embedding_lookup(params = self.embedding_matrix,
+                                                ids = self.encoder_inputs)
+
+        decoder_inputs = tf.nn.embedding_lookup(params = self.embedding_matrix,
+                                                ids = self.decoder_inputs)
+        
         encoder = Encoder(hidden_dim = self.hidden_dim,
                         embedding_matrix = self.embedding_matrix,
                         dropout_rate = self.dropout_rate)
